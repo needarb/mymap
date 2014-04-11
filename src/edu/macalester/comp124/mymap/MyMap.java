@@ -47,6 +47,16 @@ public class MyMap <K, V> {
 		expandIfNecessary();
 		
 		// TODO: Store the key.
+        int hashCode = key.hashCode();
+        int slot = hashCode % buckets.length;
+        for(MyEntry m:buckets[slot])
+            if(m.getKey().equals(key))
+            {
+                m.setValue(value);
+                return;
+            }
+        buckets[slot].add(new MyEntry<>(key,value));
+        numEntries++;
 	}
 	
 	/**
@@ -58,14 +68,28 @@ public class MyMap <K, V> {
 	 */
 	public V get(K key) {
 		// TODO: retrieve the key.
+        int hashCode = key.hashCode();
+        int slot = hashCode % buckets.length;
+        for(MyEntry<K,V> m: buckets[slot])
+            if(m.getKey().equals(key))
+                return m.getValue();
 		return null;
 	}
 	
 	/**
 	 * Expands the table to double the size, if necessary.
 	 */
-	private void expandIfNecessary() {
+	private void expandIfNecessary()
+    {
 		// TODO: expand if necessary
+        if(numEntries <= buckets.length*.75)
+            return;
+        List<MyEntry<K,V>>[] oldBuckets = buckets;
+        buckets = newArrayOfEntries(oldBuckets.length*2);
+        numEntries = 0;
+        for(List<MyEntry<K,V>> list:oldBuckets)
+            for(MyEntry<K,V> m:list)
+                put(m.getKey(),m.getValue());
 	}
 	
 	/**
